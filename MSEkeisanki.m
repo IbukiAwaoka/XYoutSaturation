@@ -3,10 +3,14 @@ clc;
 clear all;
 
 % ユーザー入力
-t = input('時刻を入力してください（標準値50）');
-N = input('次元を入力してください（標準値200）');
-ens = input('試行回数を入力してください');
-a = input('メモリ幅の決定');
+fprintf('時刻を入力してください（標準値100）: ');
+t = input('');
+fprintf('次元を入力してください（標準値200）: ');
+N = input('');
+fprintf('試行回数を入力してください（標準値1000）: ');
+ens = input('');
+fprintf('メモリ幅の決定: ');
+a = input('');
 
 tic;    % ストップウォッチタイマー開始
 
@@ -73,9 +77,16 @@ for i = 1:ens
 end
 
 % 結果の保存
+% 出力フォルダの作成
+outputDir = 'output';
+if ~exist(outputDir, 'dir')
+    mkdir(outputDir);
+end
+
 data = [(0:1 / a:t); MSE'];
 header = 'MSE Simulation';
 fname = char([header, '(N=', num2str(N), ',T=', num2str(t), ',S1=', num2str(S1), ',S2=', num2str(S2), ',mu=', num2str(mu), ',ens=', num2str(ens), ',xi=', num2str(xi), ',a=', num2str(a), ').txt']);
+fname = fullfile(outputDir, fname);  % outputフォルダ内のパスを生成
 Fid = fopen(fname, 'w');
 S = '#time     MSE';    % 記録ファイルの一行目
 fprintf(Fid, '%s\n', S);
