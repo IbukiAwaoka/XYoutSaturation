@@ -10,7 +10,7 @@ set ylabel font "Arial,16" "MSE"
 set tics font "Arial,16"
 set key right top
 set size ratio 0.75
-set grid
+#set grid
 
 # Set the terminal to output a high-quality PNG file (optional)
 # set terminal pngcairo enhanced font "Arial,12" size 800,600
