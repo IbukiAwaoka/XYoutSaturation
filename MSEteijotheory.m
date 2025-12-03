@@ -17,8 +17,15 @@ sgm_g = sqrt(1);
 PRS = 1e-6; % 数値積分の精度 RelTol, AbsTol
 RNG = 7; % 数値積分の範囲を決めるパラメータ
 
+% 出力フォルダの作成
+outputDir = 'output';
+if ~exist(outputDir, 'dir')
+    mkdir(outputDir);
+end
+
 fname = char(['dyhouwa1intS2loop', ', tEnd=', num2str(tEnd), ', mu=', num2str(mu), ...
     ', S1=', num2str(S1), ', S2=', num2str(S2), ', xi=', num2str(xi), '.txt']);
+fname = fullfile(outputDir, fname);  % outputフォルダ内のパスを生成
 Fid = fopen(fname, 'w');
 Header = '#S2/S1 STVMSE';
 fprintf(Fid, '%s\n', Header);
@@ -54,6 +61,8 @@ for i = 1:length(S2loop)
 end
 
 fclose(Fid);
+
+disp(['ファイル出力完了: ', fname]);
 toc;
 
 function dydt = odefun(t, y)
