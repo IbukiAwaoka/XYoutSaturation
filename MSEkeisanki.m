@@ -93,4 +93,9 @@ fprintf(Fid, '%s\n', S);
 fprintf(Fid, '%f   %1.5f\n', data);
 fclose(Fid);
 
+% 最終MSE値をターミナルに表示
+fprintf('\n========== 結果 ==========\n');
+fprintf('準定常MSE (t=%.1f): %.6f\n', t, MSE(end));
+fprintf('ファイル出力完了: %s\n', fname);
+
 toc;    % タイマー終了

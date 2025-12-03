@@ -8,7 +8,7 @@ tic; % ストップウォッチタイマー開始
 global fd2 dfd PRS RNG mu S1 S2 xi rho sgm_g
 
 rho = 1;
-S1 = 2;
+S1 = 1;
 S2loop = 0:S1/100:S1*3; % 初期値、刻み幅、終了値
 xi = 0.1;
 mu = 0.1;
@@ -39,7 +39,7 @@ dfd = rho^2 * sgm_g^2 * erf(S1/sqrt(2 * rho^2 * sgm_g^2));
 
 for i = 1:length(S2loop)
     S2 = S2loop(i);
-    fprintf('Progress for S2=%2f : %2f%%\n', S2, (i/length(S2loop)) * 100);
+    fprintf('\n[%d/%d] S2=%.3f (S2/S1=%.2f) を計算中...\n', i, length(S2loop), S2, S2/S1);
 
     % ソルバーで時間発展を計算 ODE
     options = odeset('RelTol', 1e-6, 'AbsTol', 1e-6); % 精度の調整
@@ -55,12 +55,18 @@ for i = 1:length(S2loop)
 
     % 最終時刻でのMSEを計算
     MSE_final = calculateMSE(Q_final, r_final, dycov_final, invcov_final);
+    
+    fprintf('     完了: 準定常MSE = %.6f\n', MSE_final);
 
     % 結果をファイルに書き込み (S2/S1 vs MSE)
     fprintf(Fid, '%g\t%g\n', S2/S1, MSE_final);
 end
 
 fclose(Fid);
+
+fprintf('\n========== 結果サマリー ==========\n');
+fprintf('計算完了: %d点\n', length(S2loop));
+fprintf('ファイル出力完了: %s\n', fname);
 
 disp(['ファイル出力完了: ', fname]);
 toc;
@@ -81,7 +87,7 @@ function dydt = odefun(t, y)
         fy2 = S2^2 - S2 * sqrt(2 * rho^2 * Q/pi) * ...
             exp(-S2^2/(2 * rho^2 * Q)) + (rho^2 * Q - S2^2) * erf(erf_arg1);
     else
-        % erf_argが無効な場合は、代わりにerf_arg0 (論文ママ)
+        % erf_argが無効な場合は、代わりに0 (論文ママ)
         fy2 = 0; 
     end
     
@@ -133,9 +139,7 @@ function result = calculateIntegral(Q, dycov, invcov)
     % yに関する積分範囲
     yr = RNG * sqrt(rho^2) * max(sqrt(Q), 1e-9);
     
-    % x -> -Inf to S1 の範囲 (論文コードでは integratedXLower が S1までカバーしている模様)
-    % ※ 論文コードの関数呼び出し構造をそのまま再現します
-    
+    % yに関して積分済みの関数を定義 (x -> -Inf to -S1 の範囲)
     result1 = integral(@(y) integratedXLower(y, S1, dycov, invcov), -yr, -S2, ...
         'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
     result2 = integral(@(y) integratedXLower(y, S1, dycov, invcov), -S2, S2, ...
@@ -164,7 +168,7 @@ function result = calculateIntegral(Q, dycov, invcov)
 end
 
 function result = integratedXLower(y, x1, dycov, invcov)
-    % -Inf から -x1 までの x に関する積分結果 (論文コードのコメントママ)
+    % -Inf から -x1 までの x に関する積分結果
     global S2 S1
     a = invcov(1,1);
     b = invcov(1,2);
@@ -179,7 +183,8 @@ function result = integratedXLower(y, x1, dycov, invcov)
         coef = y;
     end
     
-    erf_arg = sqrt(a) * (x1 + b*y/a) / sqrt(2);
+    erf_arg = sqrt(a) * (-x1 + b*y/a) / sqrt(2); % 論文コードでは x1 ではなく -x1 を引数に使用している箇所
+    
     if isreal(erf_arg) && all(isfinite(erf_arg))
         result = (-S1) * coef / (2*pi*sqrt(detCov)) * ...
             sqrt(pi./a./2) .* exp(-(c - b.^2./a).*y.^2./2) .* ...
@@ -190,7 +195,7 @@ function result = integratedXLower(y, x1, dycov, invcov)
 end
 
 function result = integratedXMiddle(y, x1, x2, dycov, invcov)
-    % x1 から x2 までの x に関する積分結果
+    % x1 から x2 までの x に関する積分結果 (ここでは -S1 to S1 の計算)
     global S2
     a = invcov(1,1);
     b = invcov(1,2);
@@ -206,11 +211,11 @@ function result = integratedXMiddle(y, x1, x2, dycov, invcov)
     end
     
     erf_arg1 = sqrt(a./2) .* (x2 + b.*y./a);
-    erf_arg2 = sqrt(a./2) .* (x1 + b.*y./a); % ※ここが前のコードと符号が違う可能性あり、論文コード準拠
+    erf_arg2 = sqrt(a./2) .* (-x1 + b.*y./a); % 積分範囲下限 -x1
     
     if isreal(erf_arg1) && all(isfinite(erf_arg1)) && isreal(erf_arg2) && all(isfinite(erf_arg2))
         result = coef ./ (2*pi*sqrt(detCov)) .* exp(-(c - b.^2./a).*y.^2./2) .* ...
-            ((-1./a) .* (exp(-a.*(x2 + b.*y./a).^2./2) - exp(-a.*(x1 + b.*y./a).^2./2)) - ...
+            ((-1./a) .* (exp(-a.*(x2 + b.*y./a).^2./2) - exp(-a.*(-x1 + b.*y./a).^2./2)) - ...
             (b.*y./a) .* sqrt(pi./2./a) .* (erf(erf_arg1) - erf(erf_arg2)));
     else
         result = 0;
