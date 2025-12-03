@@ -8,8 +8,8 @@ tic; % ストップウォッチタイマー開始
 global fd2 dfd PRS RNG mu S1 S2 xi rho sgm_g
 
 rho = 1;
-S1 = 1;
-S2 = 2;
+S1 = 2;
+S2 = 1;
 xi = 0;
 mu = 0.1;
 sgm_g = sqrt(1);
