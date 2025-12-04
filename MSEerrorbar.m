@@ -6,9 +6,9 @@ if ~exist('output', 'dir')
     mkdir('output');
 end
 
-t = 300;
+t = 5000;
 N = 200;
-ens = 100;
+ens = 1000;
 
 mu = 0.1; % ステップサイズ
 xi = 0; % 背景雑音

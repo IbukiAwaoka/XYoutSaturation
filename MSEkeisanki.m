@@ -73,7 +73,7 @@ for i = 1:ens
     end
 
     % 進行状況の表示
-    disp([num2str(i * 100 / ens), '%'])
+    fprintf('Progress: %.2f%%\n', (i / ens) * 100);
 end
 
 % 結果の保存
