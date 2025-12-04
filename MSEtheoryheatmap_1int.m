@@ -1,3 +1,17 @@
+% MSEtheoryheatmap_1int.m
+% 理論値版のS1×S2ヒートマップ生成スクリプト
+% 
+% 機能:
+%   - S1とS2を0～3まで0.1刻みでスイープ
+%   - parfeval並列計算により理論MSE値を計算（1次元積分使用）
+%   - ヒートマップとして可視化・保存
+%   - 統計データをテキストファイルとして保存
+%
+% 出力ファイル:
+%   - output/MSEtheory_heatmap_t{tEnd}_mu{mu}.png
+%   - output/MSEtheory_heatmap_data_t{tEnd}_mu{mu}.mat
+%   - output/MSEtheory_heatmap_stats_t{tEnd}_mu{mu}.txt
+
 clc;
 clear all;
 
