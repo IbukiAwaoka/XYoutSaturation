@@ -13,7 +13,7 @@
 %   - output/MSEtheory_heatmap_stats_t{tEnd}_mu{mu}.txt
 
 clc;
-clear all;
+clearvars;
 
 tic;
 
