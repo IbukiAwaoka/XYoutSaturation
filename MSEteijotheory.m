@@ -1,31 +1,29 @@
 clc;
 clear all;
 
-tEnd = 300;
+% outputフォルダの作成
+if ~exist('output', 'dir')
+    mkdir('output');
+end
+
+tEnd = 1000;
 
 tic; % ストップウォッチタイマー開始
 
 global fd2 dfd PRS RNG mu S1 S2 xi rho sgm_g
 
 rho = 1;
-S1 = 1;
+S1 = 2;
 S2loop = 0:S1/100:S1*3; % 初期値、刻み幅、終了値
 xi = 0.1;
 mu = 0.1;
 sgm_g = sqrt(1);
 
-PRS = 1e-6; % 数値積分の精度 RelTol, AbsTol
+PRS = 1e-9; % 数値積分の精度 RelTol, AbsTol (1e-6 から 1e-9 に変更)
 RNG = 7; % 数値積分の範囲を決めるパラメータ
 
-% 出力フォルダの作成
-outputDir = 'output';
-if ~exist(outputDir, 'dir')
-    mkdir(outputDir);
-end
-
-fname = char(['dyhouwa1intS2loop', ', tEnd=', num2str(tEnd), ', mu=', num2str(mu), ...
-    ', S1=', num2str(S1), ', S2=', num2str(S2), ', xi=', num2str(xi), '.txt']);
-fname = fullfile(outputDir, fname);  % outputフォルダ内のパスを生成
+fname = fullfile('output', char(['dyhouwa1intS2loop', ', tEnd=', num2str(tEnd), ', mu=', num2str(mu), ...
+    ', S1=', num2str(S1), ', S2=', num2str(S2), ', xi=', num2str(xi), '.txt']));
 Fid = fopen(fname, 'w');
 Header = '#S2/S1 STVMSE';
 fprintf(Fid, '%s\n', Header);
@@ -39,11 +37,11 @@ dfd = rho^2 * sgm_g^2 * erf(S1/sqrt(2 * rho^2 * sgm_g^2));
 
 for i = 1:length(S2loop)
     S2 = S2loop(i);
-    fprintf('\n[%d/%d] S2=%.3f (S2/S1=%.2f) を計算中...\n', i, length(S2loop), S2, S2/S1);
+    fprintf('Progress for S2=%2f : %2f%%\n', S2, (i/length(S2loop)) * 100);
 
     % ソルバーで時間発展を計算 ODE
-    options = odeset('RelTol', 1e-6, 'AbsTol', 1e-6); % 精度の調整
-    [t, y] = ode45(@(t, y) odefun(t, y), [0 tEnd], [1e-9, 1e-9], options);
+    options = odeset('RelTol', 1e-9, 'AbsTol', 1e-9, 'MaxStep', 0.1); % MaxStepを追加して時間刻みを制限
+    [t, y] = ode45(@(t, y) odefun(t, y), [0 tEnd], [1e-12, 1e-12], options); % 初期値を1e-12に変更
 
     % 最終時刻のQ, rを取得
     Q_final = y(end, 1);
@@ -55,20 +53,12 @@ for i = 1:length(S2loop)
 
     % 最終時刻でのMSEを計算
     MSE_final = calculateMSE(Q_final, r_final, dycov_final, invcov_final);
-    
-    fprintf('     完了: 準定常MSE = %.6f\n', MSE_final);
 
     % 結果をファイルに書き込み (S2/S1 vs MSE)
     fprintf(Fid, '%g\t%g\n', S2/S1, MSE_final);
 end
 
 fclose(Fid);
-
-fprintf('\n========== 結果サマリー ==========\n');
-fprintf('計算完了: %d点\n', length(S2loop));
-fprintf('ファイル出力完了: %s\n', fname);
-
-disp(['ファイル出力完了: ', fname]);
 toc;
 
 function dydt = odefun(t, y)
