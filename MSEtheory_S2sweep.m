@@ -8,7 +8,7 @@ tic; % ストップウォッチタイマー開始
 global fd2 dfd PRS RNG mu S1 S2 xi rho sgm_g
 
 rho = 1;
-S1 = 2;  % S1を固定
+S1 = 1;  % S1を固定
 xi = 0;
 mu = 1;
 sgm_g = sqrt(1);
@@ -23,7 +23,7 @@ if ~exist(outputDir, 'dir')
 end
 
 % S2/S1の範囲設定
-S2_S1_ratio = linspace(0, 3, 31); % 0から3まで31点（0.1刻み）
+S2_S1_ratio = linspace(0, 3, 301); % 0から3まで301点（0.1刻み）
 num_ratios = length(S2_S1_ratio);
 
 % 結果保存用の配列

@@ -18,10 +18,10 @@ set grid
 
 # Plot the simulation data from output folder
 plot [0:3] \
-    'output/dyhouwa1intS2loop, tEnd=300, mu=0.1, S1=0.3, S2=, xi=0.1.txt' using 1:2 with lines linetype 1 lw 1 title "Theory S1=0.3", \
-    'output/dyhouwa1intS2loop, tEnd=300, mu=0.1, S1=0.5, S2=, xi=0.1.txt' using 1:2 with lines linetype 2 lw 1 title "S1=0.5", \
-    'output/dyhouwa1intS2loop, tEnd=300, mu=0.1, S1=1, S2=, xi=0.1.txt' using 1:2 with lines linetype 3 lw 1 title "S1=1", \
-    'output/dyhouwa1intS2loop, tEnd=300, mu=0.1, S1=2, S2=, xi=0.1.txt' using 1:2 with lines linetype 4 lw 1 title "S1=2", \
+    'output/MSE_S2sweep_t300_mu1_S10.3.txt' using 1:3 with lines linetype 1 lw 1 title "Theory S1=0.3", \
+    'output/MSE_S2sweep_t300_mu1_S10.5.txt' using 1:3 with lines linetype 2 lw 1 title "S1=0.5", \
+    'output/MSE_S2sweep_t300_mu1_S11.txt' using 1:3 with lines linetype 3 lw 1 title "S1=1", \
+    'output/MSE_S2sweep_t300_mu1_S12.txt' using 1:3 with lines linetype 4 lw 1 title "S1=2", \
     'output/dyhouwaerrorbar(N=200, S1=0.3, T=300, mu=0.1, ens=100, xi=0_errorbars).txt' using 1:2:3:4 with yerrorbars linetype 1 pt 7 ps 0.5 title "Simulation S1=0.3", \
     'output/dyhouwaerrorbar(N=200, S1=0.5, T=300, mu=0.1, ens=100, xi=0_errorbars).txt' using 1:2:3:4 with yerrorbars linetype 2 pt 7 ps 0.5 title "S1=0.5", \
     'output/dyhouwaerrorbar(N=200, S1=1, T=300, mu=0.1, ens=100, xi=0_errorbars).txt' using 1:2:3:4 with yerrorbars linetype 3 pt 7 ps 0.5 title "S1=1", \

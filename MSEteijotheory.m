@@ -6,7 +6,7 @@ if ~exist('output', 'dir')
     mkdir('output');
 end
 
-tEnd = 1000;
+tEnd = 300;
 
 tic; % ストップウォッチタイマー開始
 
@@ -19,7 +19,7 @@ xi = 0.1;
 mu = 0.1;
 sgm_g = sqrt(1);
 
-PRS = 1e-9; % 数値積分の精度 RelTol, AbsTol (1e-6 から 1e-9 に変更)
+PRS = 1e-6; % 数値積分の精度 RelTol, AbsTol 
 RNG = 7; % 数値積分の範囲を決めるパラメータ
 
 fname = fullfile('output', char(['dyhouwa1intS2loop', ', tEnd=', num2str(tEnd), ', mu=', num2str(mu), ...
@@ -40,8 +40,8 @@ for i = 1:length(S2loop)
     fprintf('Progress for S2=%2f : %2f%%\n', S2, (i/length(S2loop)) * 100);
 
     % ソルバーで時間発展を計算 ODE
-    options = odeset('RelTol', 1e-9, 'AbsTol', 1e-9, 'MaxStep', 0.1); % MaxStepを追加して時間刻みを制限
-    [t, y] = ode45(@(t, y) odefun(t, y), [0 tEnd], [1e-12, 1e-12], options); % 初期値を1e-12に変更
+    options = odeset('RelTol', 1e-6, 'AbsTol', 1e-6, 'MaxStep', 0.1); % MaxStepを追加して時間刻みを制限
+    [t, y] = ode45(@(t, y) odefun(t, y), [0 tEnd], [1e-9, 1e-9], options); % 初期値を1e-12に変更
 
     % 最終時刻のQ, rを取得
     Q_final = y(end, 1);
