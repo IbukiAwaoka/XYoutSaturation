@@ -3,6 +3,7 @@
 # ====================================================================
 
 # Set plot options
+set title "Normalized Sim Steady State MSE Heatmap"
 set xlabel font "Arial,14" "S1"
 set ylabel font "Arial,14" "S2"
 set cblabel font "Arial,14" "MSE"
@@ -19,6 +20,6 @@ set pm3d at b
 
 # 画面にプレビュー表示のみ（保存しない）
 set terminal wxt size 800,800
-splot 'Ioutput/mse_data_xi=0.00.txt' using 1:2:3 with pm3d notitle
+splot 'Ioutput/NEWmse_data_normalized_xi=0.00.txt' using 1:2:3 with pm3d notitle
 
 

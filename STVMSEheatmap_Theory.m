@@ -16,12 +16,12 @@ tEnd = 300;
 
 tic;    % ストップウォッチタイマー開始
 
-global PRS RNG mu S1 S2 xi rho sgm_g
+global PRS RNG mu xi rho sgm_g  % S1, S2は削除
 
 rho = 1;
 S1loop = 0:0.1:3;
 S2loop = 0:0.1:3; 
-xi = 0.1;
+xi = 0;
 mu = 0.1;
 sgm_g = sqrt(1);
 
@@ -120,8 +120,6 @@ end
 end
 
 function result = calculateMSE(Q, r, dycov, invcov, S1, S2, rho, xi, sgm_g)
-    global  S2 rho xi S1 sgm_g
-    
     erf_arg1 = S2 / sqrt(2 * rho^2 * Q);
     erf_arg2 = S1 / sqrt(2 * rho^2 * sgm_g^2);
 
@@ -151,39 +149,112 @@ function result = calculateIntegral(Q, dycov, invcov, S1, S2, rho)
     PRS = 1e-6;
     RNG = 7;
     
+    % 共分散行列のチェック
+    if det(dycov) <= 1e-12
+        result = 0;
+        return;
+    end
+    
     % y に関する積分範囲
     yr = RNG * sqrt(rho^2) * max(sqrt(Q), 1e-9);
     
-    % xに関して積分済みの関数を定義（-Inf to -S1 の範囲）
-    result1 = integral(@(y) integratedXLower(y, -S1, dycov, invcov, S2, S1), -yr, -S2, 'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
-    result2 = integral(@(y) integratedXLower(y, -S1, dycov, invcov, S2, S1), -S2, S2, 'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
-    result3 = integral(@(y) integratedXLower(y, -S1, dycov, invcov, S2, S1), S2, yr, 'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+    % 各積分を個別に計算し、エラーハンドリング
+    try
+        result1 = integral(@(y) integratedXLower(y, -S1, dycov, invcov, S2, S1), -yr, -S2, ...
+            'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+        if ~isfinite(result1), result1 = 0; end
+    catch
+        result1 = 0;
+    end
     
-    % -S1 to S1 の範囲
-    result4 = integral(@(y) integratedXMiddle(y, -S1, S1, dycov, invcov, S2), -yr, -S2, 'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
-    result5 = integral(@(y) integratedXMiddle(y, -S1, S1, dycov, invcov, S2), -S2, S2, 'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
-    result6 = integral(@(y) integratedXMiddle(y, -S1, S1, dycov, invcov, S2), S2, yr, 'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+    try
+        result2 = integral(@(y) integratedXLower(y, -S1, dycov, invcov, S2, S1), -S2, S2, ...
+            'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+        if ~isfinite(result2), result2 = 0; end
+    catch
+        result2 = 0;
+    end
     
-    % S1 to Inf の範囲
-    result7 = integral(@(y) integratedXUpper(y, S1, dycov, invcov, S2, S1), -yr, -S2, 'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
-    result8 = integral(@(y) integratedXUpper(y, S1, dycov, invcov, S2, S1), -S2, S2, 'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
-    result9 = integral(@(y) integratedXUpper(y, S1, dycov, invcov, S2, S1), S2, yr, 'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+    try
+        result3 = integral(@(y) integratedXLower(y, -S1, dycov, invcov, S2, S1), S2, yr, ...
+            'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+        if ~isfinite(result3), result3 = 0; end
+    catch
+        result3 = 0;
+    end
     
-    result = result1 + result2 + result3 + result4 + result5 + result6 + result7 + result8 + result9;
+    try
+        result4 = integral(@(y) integratedXMiddle(y, -S1, S1, dycov, invcov, S2), -yr, -S2, ...
+            'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+        if ~isfinite(result4), result4 = 0; end
+    catch
+        result4 = 0;
+    end
+    
+    try
+        result5 = integral(@(y) integratedXMiddle(y, -S1, S1, dycov, invcov, S2), -S2, S2, ...
+            'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+        if ~isfinite(result5), result5 = 0; end
+    catch
+        result5 = 0;
+    end
+    
+    try
+        result6 = integral(@(y) integratedXMiddle(y, -S1, S1, dycov, invcov, S2), S2, yr, ...
+            'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+        if ~isfinite(result6), result6 = 0; end
+    catch
+        result6 = 0;
+    end
+    
+    try
+        result7 = integral(@(y) integratedXUpper(y, S1, dycov, invcov, S2, S1), -yr, -S2, ...
+            'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+        if ~isfinite(result7), result7 = 0; end
+    catch
+        result7 = 0;
+    end
+    
+    try
+        result8 = integral(@(y) integratedXUpper(y, S1, dycov, invcov, S2, S1), -S2, S2, ...
+            'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+        if ~isfinite(result8), result8 = 0; end
+    catch
+        result8 = 0;
+    end
+    
+    try
+        result9 = integral(@(y) integratedXUpper(y, S1, dycov, invcov, S2, S1), S2, yr, ...
+            'RelTol', PRS, 'AbsTol', PRS, 'ArrayValued', true);
+        if ~isfinite(result9), result9 = 0; end
+    catch
+        result9 = 0;
+    end
+    
+    result = result1 + result2 + result3 + result4 + result5 + ...
+             result6 + result7 + result8 + result9;
+    
+    % 最終チェック
+    if ~isfinite(result)
+        result = 0;
+    end
 end
 
 function result = integratedXLower(y, x1, dycov, invcov, S2, S1)
-    % -Inf から x1 までの x に関する積分結果
-    global S2 S1
+    % 引数として受け取る（globalを削除）
     
-    % 2次形式の係数
     a = invcov(1,1);
     b = invcov(1,2);
     c = invcov(2,2);
     
     detCov = det(dycov);
     
-    % yの値に応じて係数を決定
+    % 分母がゼロに近い場合の処理
+    if detCov < 1e-12 || abs(a) < 1e-12
+        result = 0;
+        return;
+    end
+    
     if y <= -S2
         coef = -S2;
     elseif y >= S2
@@ -192,31 +263,38 @@ function result = integratedXLower(y, x1, dycov, invcov, S2, S1)
         coef = y;
     end
     
-    % -S1 に対する積分結果
-erf_arg = sqrt(a) * (x1 + b * y / a) / sqrt(2);
-if isreal(erf_arg) && all(isfinite(erf_arg))  % 実数かつ有限な値であることを確認
-    result = (-S1) .* coef ./ (2.*pi.*sqrt(detCov)) .* ...
-             sqrt(pi./a./2) .* exp(-(c - b.^2./a).*y.^2./2) .* ...
-             (1 + erf(erf_arg));
-else
-    % erfの引数が無効な場合
-    result = 0;
-end
-
+    erf_arg = sqrt(a) * (x1 + b * y / a) / sqrt(2);
+    
+    if isreal(erf_arg) && all(isfinite(erf_arg))
+        exp_term = exp(-(c - b.^2./a).*y.^2./2);
+        if ~isfinite(exp_term)
+            result = 0;
+            return;
+        end
+        result = (-S1) .* coef ./ (2.*pi.*sqrt(detCov)) .* ...
+                 sqrt(pi./a./2) .* exp_term .* (1 + erf(erf_arg));
+        if ~isfinite(result)
+            result = 0;
+        end
+    else
+        result = 0;
+    end
 end
 
 function result = integratedXMiddle(y, x1, x2, dycov, invcov, S2)
-    % x1 から x2 までの x に関する積分結果
-    global S2 
+    % 引数として受け取る（globalを削除）
     
-    % 2次形式の係数
     a = invcov(1,1);
     b = invcov(1,2);
     c = invcov(2,2);
     
     detCov = det(dycov);
     
-    % yの値に応じて係数を決定
+    if detCov < 1e-12 || abs(a) < 1e-12
+        result = 0;
+        return;
+    end
+    
     if y <= -S2
         coef = -S2;
     elseif y >= S2
@@ -225,32 +303,45 @@ function result = integratedXMiddle(y, x1, x2, dycov, invcov, S2)
         coef = y;
     end
     
-erf_arg1 = sqrt(a./2) * (x2 + b * y ./ a);
+    erf_arg1 = sqrt(a./2) * (x2 + b * y ./ a);
     erf_arg2 = sqrt(a./2) * (x1 + b * y ./ a);
     
-    % erfの引数が実数かつ有限な値であることを確認
     if isreal(erf_arg1) && all(isfinite(erf_arg1)) && isreal(erf_arg2) && all(isfinite(erf_arg2))
-        result = coef ./ (2.*pi.*sqrt(detCov)) .* exp(-(c - b.^2./a).*y.^2./2) .* ...
-            ((-1./a) .* (exp(-a*(x2 + b.*y./a).^2./2) - exp(-a.*(x1 + b.*y./a).^2./2)) - ...
+        exp_term = exp(-(c - b.^2./a).*y.^2./2);
+        exp1 = exp(-a*(x2 + b.*y./a).^2./2);
+        exp2 = exp(-a.*(x1 + b.*y./a).^2./2);
+        
+        if ~isfinite(exp_term) || ~isfinite(exp1) || ~isfinite(exp2)
+            result = 0;
+            return;
+        end
+        
+        result = coef ./ (2.*pi.*sqrt(detCov)) .* exp_term .* ...
+            ((-1./a) .* (exp1 - exp2) - ...
             (b.*y./a) .* sqrt(pi./2./a) .* (erf(erf_arg1) - erf(erf_arg2)));
+        
+        if ~isfinite(result)
+            result = 0;
+        end
     else
-        result = 0;  % erfの引数が無効な場合、0を返す
+        result = 0;
     end
-
 end
 
 function result = integratedXUpper(y, x2, dycov, invcov, S2, S1)
-    % x2 から Inf までの x に関する積分結果
-    global S2 S1
+    % 引数として受け取る（globalを削除）
     
-    % 2次形式の係数
     a = invcov(1,1);
     b = invcov(1,2);
     c = invcov(2,2);
     
     detCov = det(dycov);
     
-    % yの値に応じて係数を決定
+    if detCov < 1e-12 || abs(a) < 1e-12
+        result = 0;
+        return;
+    end
+    
     if y <= -S2
         coef = -S2;
     elseif y >= S2
@@ -259,15 +350,20 @@ function result = integratedXUpper(y, x2, dycov, invcov, S2, S1)
         coef = y;
     end
     
-    % S1 に対する積分結果
     erf_arg = sqrt(a) * (x2 + b * y / a) / sqrt(2);
     
-    % erfの引数が実数かつ有限な値であることを確認
     if isreal(erf_arg) && all(isfinite(erf_arg))
+        exp_term = exp(-(c - b.^2./a).*y.^2./2);
+        if ~isfinite(exp_term)
+            result = 0;
+            return;
+        end
         result = S1 .* coef ./ (2.*pi.*sqrt(detCov)) .* ...
-                 sqrt(pi./a./2) .* exp(-(c - b.^2./a).*y.^2./2) .* ...
-                 (1 - erf(erf_arg));
+                 sqrt(pi./a./2) .* exp_term .* (1 - erf(erf_arg));
+        if ~isfinite(result)
+            result = 0;
+        end
     else
-        result = 0;  % erfの引数が無効な場合、0を返す
+        result = 0;
     end
 end

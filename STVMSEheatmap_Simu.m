@@ -70,7 +70,7 @@ for idx1 = 1:length(S1_vals)
 end
 
 % データの保存
-filename = sprintf('mse_data_xi=%.2f.txt', xi);
+filename = sprintf('NEWmse_data_xi=%.2f.txt', xi);
 fname = fullfile('Ioutput', filename);
 fid = fopen(fname, 'w');
 fprintf(fid, '# S1 S2 MSE\n');
@@ -84,8 +84,31 @@ end
 
 fclose(fid);
 
+% 正規化したMSEの計算と保存
+MSE_min = min(MSE_values(:));
+MSE_max = max(MSE_values(:));
+MSE_normalized = (MSE_values - MSE_min) / (MSE_max - MSE_min);
+
+% 正規化データの保存
+filename_norm = sprintf('NEWmse_data_normalized_xi=%.2f.txt', xi);
+fname_norm = fullfile('Ioutput', filename_norm);
+fid_norm = fopen(fname_norm, 'w');
+fprintf(fid_norm, '# S1 S2 MSE_normalized\n');
+fprintf(fid_norm, '# Original MSE range: min=%.5e, max=%.5e\n', MSE_min, MSE_max);
+
+for idx1 = 1:length(S1_vals)
+    for idx2 = 1:length(S2_vals)
+        fprintf(fid_norm, '%.2f %.2f %.5f\n', S1_vals(idx1), S2_vals(idx2), MSE_normalized(idx1, idx2));
+    end
+    fprintf(fid_norm, "\n"); % S1 のブロックが終わるごとに空行を挿入
+end
+
+fclose(fid_norm);
+
 total_elapsed_time = toc(total_start_time);
 fprintf('データ保存完了: %s\n', filename);
+fprintf('正規化データ保存完了: %s\n', filename_norm);
+fprintf('MSE範囲: min=%.5e, max=%.5e\n', MSE_min, MSE_max);
 fprintf('全体の計算時間: %.2f sec\n', total_elapsed_time);
 
 % 並列プールのクローズ

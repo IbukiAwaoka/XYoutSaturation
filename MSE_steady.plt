@@ -3,6 +3,7 @@
 # ====================================================================
 
 # Set plot options
+set title "Steady State MSE vs S2/S1 Ratio"
 set logscale y 
 set format y "10^{%T}"
 set yrange [1e-9:1]
