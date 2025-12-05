@@ -1,10 +1,11 @@
 clc;
 clear all;
 
-% outputフォルダの作成
-if ~exist('Ioutput', 'dir')
-    mkdir('Ioutput');
+% Ioutputフォルダの作成（親ディレクトリ）
+if ~exist('../Ioutput', 'dir')
+    mkdir('../Ioutput');
 end
+
 
 
 t = 300;
@@ -70,6 +71,7 @@ end
 data = [S2_values/S1; MSD_values'; MSD_std_p'; MSD_std_n'];
 header = 'dyMSDerrorbar';
 fname = char([header, '(N=', num2str(N), ',S1=', num2str(S1), ',T=', num2str(t), ',mu=', num2str(mu), ',ens=', num2str(ens), ',xi=', num2str(xi), '_errorbars).txt']);
+fname = fullfile('../Ioutput', fname);  % Ioutputフォルダ内のパスを生成
 Fid = fopen(fname, 'w');
 fprintf(Fid, 'S2/S1\tMSD\tMSD_std_p\tMSD_std_n\n');
 fprintf(Fid, '%.2f\t%.5f\t%.5f\t%.5f\n', data);

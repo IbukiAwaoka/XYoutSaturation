@@ -1,10 +1,11 @@
 clc ;
 clear all ;
 
-% outputフォルダの作成
-if ~exist('Ioutput', 'dir')
-    mkdir('Ioutput');
+% Ioutputフォルダの作成（親ディレクトリ）
+if ~exist('../Ioutput', 'dir')
+    mkdir('../Ioutput');
 end
+
 
 t = 100 ;
 N = 200 ;
@@ -69,6 +70,7 @@ end
 data = [(0:1/a:t);MSD'];
 header = 'MSD Simulation';
 fname = char([header,'(N=',num2str(N),',T=',num2str(t),',S1=',num2str(S1),',S2=',num2str(S2),',mu=',num2str(mu),',ens=',num2str(ens),',xi=',num2str(xi),').txt']);
+fname = fullfile('../Ioutput', fname);  % Ioutputフォルダ内のパスを生成
 Fid = fopen(fname,'w');
 S = '#time    MSD';   % 記録ファイルの一行目
 fprintf(Fid,'%s\n',S);

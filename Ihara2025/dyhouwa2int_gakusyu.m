@@ -1,10 +1,11 @@
 clc;
 clear all;
 
-% outputフォルダの作成
-if ~exist('Ioutput', 'dir')
-    mkdir('Ioutput');
+% Ioutputフォルダの作成（親ディレクトリ）
+if ~exist('../Ioutput', 'dir')
+    mkdir('../Ioutput');
 end
+
 
 tEnd = 100;
 
@@ -24,6 +25,7 @@ RNG = 7;  % 数値積分の範囲を決めるパラメータ
 
 
 fname = char(['dyhouwa tMSE', ',tEnd=', num2str(tEnd), ',mu=', num2str(mu), ',S1=', num2str(S1), ',S2=', num2str(S2), '.txt']);
+fname = fullfile('../Ioutput', fname);  % Ioutputフォルダ内のパスを生成
 Fid = fopen(fname, 'w');
 Header = '#time          Q              r            MSE';
 fprintf(Fid, '%s\n', Header);

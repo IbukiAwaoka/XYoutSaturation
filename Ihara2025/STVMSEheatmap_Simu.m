@@ -1,8 +1,8 @@
 clc; clear; close all;
 
-% outputフォルダの作成
-if ~exist('Ioutput', 'dir')
-    mkdir('Ioutput');
+% Ioutputフォルダの作成（親ディレクトリ）
+if ~exist('../Ioutput', 'dir')
+    mkdir('../Ioutput');
 end
 
 % パラメータ設定
@@ -19,7 +19,6 @@ S2_vals = linspace(0, 3, 31); % 初期値，終了値，分割数
 MSE_values = zeros(length(S1_vals), length(S2_vals)); % MSE を格納する行列
 
 total_start_time = tic; % 全体の計算時間測定開始
-
 
 for idx1 = 1:length(S1_vals)
     S1 = S1_vals(idx1);
@@ -65,7 +64,8 @@ end
 
 % データの保存
 filename = sprintf('mse_data_xi=%.2f.txt', xi);
-fid = fopen(filename, 'w');
+fname = fullfile('../Ioutput', filename);
+fid = fopen(fname, 'w');
 fprintf(fid, '# S1 S2 MSE\n');
 
 for idx1 = 1:length(S1_vals)

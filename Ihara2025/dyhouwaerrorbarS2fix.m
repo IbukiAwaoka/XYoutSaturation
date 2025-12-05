@@ -1,10 +1,11 @@
 clc;
 clear all;
 
-% outputフォルダの作成
-if ~exist('Ioutput', 'dir')
-    mkdir('Ioutput');
+% Ioutputフォルダの作成（親ディレクトリ）
+if ~exist('../Ioutput', 'dir')
+    mkdir('../Ioutput');
 end
+
 
 t = 5000;
 N = 200;
@@ -68,6 +69,7 @@ end
 data = [S1_values/S2; MSE_values'; MSE_std_p'; MSE_std_n'];
 header = 'dyhouwaerrorbar';
 fname = char([header, '(N=', num2str(N), ',S2=', num2str(S2), ',T=', num2str(t), ',mu=', num2str(mu), ',ens=', num2str(ens), ',xi=', num2str(xi), '_errorbars).txt']);
+fname = fullfile('../Ioutput', fname);  % Ioutputフォルダ内のパスを生成
 Fid = fopen(fname, 'w');
 fprintf(Fid, 'S1/S2\tMSE\tMSE_std_p\tMSE_std_n\n');
 fprintf(Fid, '%.2f\t%.5f\t%.5f\t%.5f\n', data);
