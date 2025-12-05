@@ -13,7 +13,7 @@ xi = 0.0;      % 背景雑音
 S1 = 2;        % 入力側飽和幅（固定）
 
 % 出力フォルダの作成
-outputDir = 'output';
+outputDir = 'Ioutput';
 if ~exist(outputDir, 'dir')
     mkdir(outputDir);
 end

@@ -1,6 +1,11 @@
 clc ;
 clear all ;
 
+% outputフォルダの作成
+if ~exist('Ioutput', 'dir')
+    mkdir('Ioutput');
+end
+
 t = 5000; %input(' 時刻を入力してください(標準値 30)') ;
 N = 200; %input(' 次元を入力してください(標準値 200)') ;
 ens = 1000; %input(' 試行回数を入力してください ') ;

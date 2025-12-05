@@ -1,5 +1,10 @@
 clc; clear; close all;
 
+% outputフォルダの作成
+if ~exist('Ioutput', 'dir')
+    mkdir('Ioutput');
+end
+
 % パラメータ設定
 t = 5000;    % シミュレーション時間
 N = 200;     % 次元数

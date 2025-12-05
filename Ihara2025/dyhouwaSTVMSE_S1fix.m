@@ -1,6 +1,11 @@
 clc;
 clear all;
 
+% outputフォルダの作成
+if ~exist('Ioutput', 'dir')
+    mkdir('Ioutput');
+end
+
 tEnd = 300;
 
 tic;    % ストップウォッチタイマー開始

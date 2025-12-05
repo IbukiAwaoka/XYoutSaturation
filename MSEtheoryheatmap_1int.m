@@ -13,7 +13,7 @@ PRS = 1e-10;
 RNG = 8;
 
 % 出力フォルダの作成
-outputDir = 'output';
+outputDir = 'Ioutput';
 if ~exist(outputDir, 'dir')
     mkdir(outputDir);
 end

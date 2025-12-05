@@ -1,6 +1,11 @@
 clc ;
 clear all ;
 
+% outputフォルダの作成
+if ~exist('Ioutput', 'dir')
+    mkdir('Ioutput');
+end
+
 t = 100 ;
 N = 200 ;
 ens = 1000 ;

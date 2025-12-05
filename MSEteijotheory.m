@@ -37,7 +37,7 @@ dfd = rho^2 * sgm_g^2 * erf(S1/sqrt(2 * rho^2 * sgm_g^2));
 
 for i = 1:length(S2loop)
     S2 = S2loop(i);
-    fprintf('Progress for S2=%.2f : %.2f%%\n', S2, (i/length(S2loop)) * 100);
+    fprintf('Progress for S2=%2f : %2f%%\n', S2, (i/length(S2loop)) * 100);
 
     % ソルバーで時間発展を計算 ODE
     options = odeset('RelTol', 1e-6, 'AbsTol', 1e-6, 'MaxStep', 0.1); % MaxStepを追加して時間刻みを制限

@@ -31,7 +31,7 @@ for r_idx = 1:num_ratios
     ratio = ratio_values(r_idx);
     S2 = ratio * S1;
     
-    fprintf('\n[%d/%d] S2/S1 = %.2f (S2 = %.3f) を計算中...\n', r_idx, num_ratios, ratio, S2);
+    fprintf('S2/S1 = %.2f (S2 = %.3f) を計算中...\n', ratio, S2);
     
     n = N * t + 1; % 更新回数
     MSE = zeros(a * t + 1, 1); % MSEの初期化
@@ -87,7 +87,7 @@ for r_idx = 1:num_ratios
     % 定常状態のMSE（最後の値）を記録
     steady_state_mse(r_idx) = MSE(end);
     
-    fprintf('     完了: 準定常MSE = %.6f\n', steady_state_mse(r_idx));
+    fprintf('  完了: 定常MSE = %.6f\n', steady_state_mse(r_idx));
 end
 
 % 結果の保存
