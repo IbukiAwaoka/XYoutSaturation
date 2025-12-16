@@ -13,7 +13,7 @@ PRS = 1e-10;
 RNG = 8;
 
 % 出力フォルダの作成
-outputDir = 'Ioutput';
+outputDir = 'output';
 if ~exist(outputDir, 'dir')
     mkdir(outputDir);
 end
@@ -103,7 +103,7 @@ if ~isreal(MSE_matrix)
 end
 
 % txtファイルの保存（S1, S2, MSE形式）
-txt_fname = fullfile(outputDir, ['MSEtheory_heatmap_t', num2str(tEnd), '_mu', num2str(mu), '.txt']);
+txt_fname = fullfile(outputDir, ['parfevalMSEtheory_heatmap_t', num2str(tEnd), '_mu', num2str(mu), '.txt']);
 Fid_txt = fopen(txt_fname, 'w');
 fprintf(Fid_txt, '#S1\tS2\tMSE\n');
 

@@ -14,7 +14,7 @@ global fd2 dfd PRS RNG mu S1 S2 xi rho sgm_g
 
 rho = 1;
 S1 = 1;
-S2 = 1;
+S2 = 2;
 xi = 0;
 mu = 1;
 sgm_g = sqrt(1);

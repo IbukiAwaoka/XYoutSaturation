@@ -4,13 +4,14 @@
 
 # Set plot options
 #set logscale y 
+set title "μ=0.1" font "Arial,16"
 set yrange [0:1]
 set xlabel font "Arial,16" "t = n/N"
 set ylabel font "Arial,16" "MSE"
-set tics font "Arial,16"
+set tics font "Arial,12"
 set key right top
 set size ratio 0.75
-set grid
+#set grid
 
 # Set the terminal to output a high-quality PNG file (optional)
 # set terminal pngcairo enhanced font "Arial,12" size 800,600
